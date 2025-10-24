@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMCS - Choose Your Role</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            padding: 50px;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+            .logo h1 {
+                color: #2575fc;
+                font-size: 36px;
+                font-weight: 700;
+                margin-bottom: 10px;
+            }
+
+            .logo p {
+                color: #666;
+                font-size: 16px;
+            }
+
+        .welcome-text {
+            margin-bottom: 40px;
+        }
+
+            .welcome-text h2 {
+                color: #333;
+                font-size: 24px;
+                margin-bottom: 10px;
+            }
+
+            .welcome-text p {
+                color: #666;
+                font-size: 16px;
+                line-height: 1.5;
+            }
+
+        .role-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .role-btn {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            display: flex;
+            align-items: center;
+        }
+
+            .role-btn:hover {
+                border-color: #2575fc;
+                background: #f8faff;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(37, 117, 252, 0.1);
+            }
+
+        .role-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #2575fc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .role-info h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .role-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .lecturer {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .coordinator {
+            border-left: 4px solid #FF9800;
+        }
+
+        .manager {
+            border-left: 4px solid #F44336;
+        }
+
+        .lecturer .role-icon {
+            background: #4CAF50;
+        }
+
+        .coordinator .role-icon {
+            background: #FF9800;
+        }
+
+        .manager .role-icon {
+            background: #F44336;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .demo-note {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>CMCS</h1>
+            <p>Course Management and Coordination System</p>
+        </div>
+
+        <div class="welcome-text">
+            <h2>Welcome to CMCS</h2>
+            <p>Select your role to continue to the system</p>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-error">
+                @TempData["Error"]
+            </div>
+        }
+
+        <form method="post" action="@Url.Action("LoginAs", "Account")">
+            <div class="role-selection">
+                <button type="submit" name="role" value="lecturer" class="role-btn lecturer">
+                    <div class="role-icon">L</div>
+                    <div class="role-info">
+                        <h3>Lecturer</h3>
+                        <p>Manage teaching requests and view assigned modules</p>
+                    </div>
+                </button>
+
+                <button type="submit" name="role" value="coordinator" class="role-btn coordinator">
+                    <div class="role-icon">C</div>
+                    <div class="role-info">
+                        <h3>Coordinator</h3>
+                        <p>Approve teaching requests and manage course allocations</p>
+                    </div>
+                </button>
+
+                <button type="submit" name="role" value="manager" class="role-btn manager">
+                    <div class="role-icon">M</div>
+                    <div class="role-info">
+                        <h3>Manager</h3>
+                        <p>Oversee system operations and generate reports</p>
+                    </div>
+                </button>
+            </div>
+        </form>
+
+        <div class="demo-note">
+            <strong>Demo System:</strong> Simply select your role to login. No credentials required.
+        </div>
+    </div>
+</body>
+</html>

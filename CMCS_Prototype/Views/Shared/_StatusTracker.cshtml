@@ -1,0 +1,51 @@
+﻿@model string
+
+<div class="status-tracker">
+    <div class="d-flex justify-content-between mb-2">
+        <small class="@(Model == "Pending" ? "fw-bold text-primary" : "text-muted")">
+            <i class="fas fa-paper-plane"></i> Submitted
+        </small>
+        <small class="@(Model == "Reviewed" ? "fw-bold text-info" : "text-muted")">
+            <i class="fas fa-search"></i> Under Review
+        </small>
+        <small class="@(Model == "Approved" || Model == "Rejected" ? "fw-bold " + (Model == "Approved" ? "text-success" : "text-danger") : "text-muted")">
+            <i class="fas fa-flag"></i>
+            @(Model == "Approved" ? "Approved" : Model == "Rejected" ? "Rejected" : "Final Decision")
+        </small>
+    </div>
+
+    <div class="progress" style="height: 12px;">
+        <div class="progress-bar @GetStatusColor(Model)"
+             style="width: @GetStatusProgress(Model)%"
+             role="progressbar"
+             aria-valuenow="@GetStatusProgress(Model)"
+             aria-valuemin="0"
+             aria-valuemax="100">
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning",
+            "Reviewed" => "bg-info",
+            "Approved" => "bg-success",
+            "Rejected" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private int GetStatusProgress(string status)
+    {
+        return status switch
+        {
+            "Pending" => 33,
+            "Reviewed" => 66,
+            "Approved" or "Rejected" => 100,
+            _ => 0
+        };
+    }
+}

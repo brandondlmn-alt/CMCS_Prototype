@@ -1,0 +1,182 @@
+﻿@model Claim
+
+@{
+    ViewData["Title"] = "Claim Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-file-invoice"></i> Claim Details
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <!-- Status Tracking -->
+                    <div class="mb-4">
+                        <partial name="_StatusTracker" model="Model.Status" />
+                    </div>
+
+                    <!-- Claim Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Claim Information</h5>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Month:</th>
+                                    <td>@Model.Month</td>
+                                </tr>
+                                <tr>
+                                    <th>Year:</th>
+                                    <td>@Model.Year</td>
+                                </tr>
+                                <tr>
+                                    <th>Hours Worked:</th>
+                                    <td>@Model.HoursWorked</td>
+                                </tr>
+                                <tr>
+                                    <th>Total Amount:</th>
+                                    <td>R @Model.TotalAmount.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <th>Status:</th>
+                                    <td>
+                                        <span class="badge @GetStatusBadge(Model.Status)">
+                                            @Model.Status
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Timeline</h5>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Submitted:</th>
+                                    <td>@Model.SubmissionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                </tr>
+                                @if (!string.IsNullOrEmpty(Model.CoordinatorReview))
+                                {
+                                    <tr>
+                                        <th>Coordinator Review:</th>
+                                        <td>@Model.CoordinatorReview</td>
+                                    </tr>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.ManagerApproval))
+                                {
+                                    <tr>
+                                        <th>Manager Approval:</th>
+                                        <td>@Model.ManagerApproval</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Notes -->
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="mb-4">
+                            <h5>Additional Notes</h5>
+                            <div class="alert alert-info">
+                                @Model.Notes
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Documents -->
+                    <div class="mb-4">
+                        <h5>Supporting Documents</h5>
+                        @if (Model.Documents.Any())
+                        {
+                            <div class="list-group">
+                                @foreach (var doc in Model.Documents)
+                                {
+                                    <div class="list-group-item">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="fas fa-file @GetFileIcon(doc.DocumentType) me-2"></i>
+                                                @doc.FileName
+                                                <small class="text-muted ms-2">
+                                                    (@(doc.FileSize / 1024) KB)
+                                                </small>
+                                            </div>
+                                            <small class="text-muted">
+                                                Uploaded: @doc.UploadDate.ToString("dd/MM/yyyy")
+                                            </small>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i> No supporting documents uploaded.
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Review Comments -->
+                    @if (!string.IsNullOrEmpty(Model.CoordinatorReview))
+                    {
+                        <div class="mb-4">
+                            <h5>Coordinator Review</h5>
+                            <div class="alert alert-info">
+                                <strong>@Model.Coordinator?.User?.FirstName @Model.Coordinator?.User?.LastName:</strong>
+                                @Model.CoordinatorReview
+                            </div>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.ManagerApproval))
+                    {
+                        <div class="mb-4">
+                            <h5>Manager Approval</h5>
+                            <div class="alert @(Model.Status == "Approved" ? "alert-success" : "alert-danger")">
+                                <strong>@Model.Manager?.User?.FirstName @Model.Manager?.User?.LastName:</strong>
+                                @Model.ManagerApproval
+                            </div>
+                        </div>
+                    }
+
+                    <div class="d-flex gap-2">
+                        <a href="@Url.Action("MyClaims", "Claim")" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to My Claims
+                        </a>
+                        <a href="@Url.Action("Dashboard", "Lecturer")" class="btn btn-outline-primary">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusBadge(string status)
+    {
+        return status switch
+        {
+            "Pending" => "bg-warning",
+            "Reviewed" => "bg-info",
+            "Approved" => "bg-success",
+            "Rejected" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    private string GetFileIcon(string fileType)
+    {
+        return fileType.ToLower() switch
+        {
+            ".pdf" => "text-danger",
+            ".docx" => "text-primary",
+            ".xlsx" => "text-success",
+            _ => "text-secondary"
+        };
+    }
+}

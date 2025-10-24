@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h1 class="display-4 mb-4">Welcome to CMCS</h1>
+            <p class="lead mb-4">
+                Contract Monthly Claim System - Streamlining claim submissions and approvals for educational institutions.
+            </p>
+
+            @if (Context.Session.GetString("UserID") == null)
+            {
+                <div class="row mt-5">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <i class="fas fa-sign-in-alt fa-3x text-primary mb-3"></i>
+                                <h3>Login</h3>
+                                <p>Access your account to manage claims</p>
+                                <a href="@Url.Action("Login", "Account")" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt"></i> Login
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <i class="fas fa-user-plus fa-3x text-success mb-3"></i>
+                                <h3>Register</h3>
+                                <p>Create a new account to get started</p>
+                                <a href="@Url.Action("Register", "Account")" class="btn btn-success btn-lg">
+                                    <i class="fas fa-user-plus"></i> Register
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> You are already logged in.
+                    <a href="@Url.Action("Dashboard", GetDashboardController())" class="alert-link">Go to your dashboard</a>.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetDashboardController()
+    {
+        var role = Context.Session.GetString("Role");
+        return role?.ToLower() switch
+        {
+            "lecturer" => "Lecturer",
+            "coordinator" => "Approval",
+            "manager" => "Approval",
+            _ => "Home"
+        };
+    }
+}

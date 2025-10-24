@@ -1,0 +1,146 @@
+﻿@using CMCS_Prototype.ViewModels
+@model ClaimViewModel
+
+@{
+    ViewData["Title"] = "Submit New Claim";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-plus-circle"></i> Submit New Claim
+                    </h3>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle"></i> @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Submit" method="post" enctype="multipart/form-data" id="claimForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Month" class="form-label">Month *</label>
+                                    <select asp-for="Month" class="form-select" required>
+                                        <option value="">Select Month</option>
+                                        <option value="January">January</option>
+                                        <option value="February">February</option>
+                                        <option value="March">March</option>
+                                        <option value="April">April</option>
+                                        <option value="May">May</option>
+                                        <option value="June">June</option>
+                                        <option value="July">July</option>
+                                        <option value="August">August</option>
+                                        <option value="September">September</option>
+                                        <option value="October">October</option>
+                                        <option value="November">November</option>
+                                        <option value="December">December</option>
+                                    </select>
+                                    <span asp-validation-for="Month" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Year" class="form-label">Year *</label>
+                                    <input asp-for="Year" class="form-control" placeholder="e.g., 2025"
+                                           min="2020" max="2030" required />
+                                    <span asp-validation-for="Year" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="HoursWorked" class="form-label">Hours Worked *</label>
+                            <input asp-for="HoursWorked" class="form-control" placeholder="e.g., 40"
+                                   min="1" max="200" step="0.5" required />
+                            <span asp-validation-for="HoursWorked" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Notes" class="form-label">Additional Notes</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"
+                                      placeholder="Any additional information about your claim..."></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="SupportingDocument" class="form-label">Supporting Document</label>
+                            <input asp-for="SupportingDocument" type="file" class="form-control"
+                                   accept=".pdf,.docx,.xlsx" id="fileInput" />
+                            <div class="form-text">
+                                <i class="fas fa-info-circle"></i> Allowed formats: PDF, DOCX, XLSX (Maximum: 5MB)
+                            </div>
+                            <span asp-validation-for="SupportingDocument" class="text-danger small"></span>
+                            <div id="filePreview" class="mt-2"></div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("Dashboard", "Lecturer")" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-arrow-left"></i> Back to Dashboard
+                            </a>
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-paper-plane"></i> Submit Claim
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // File preview functionality
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const filePreview = document.getElementById('filePreview');
+            const file = e.target.files[0];
+
+            if (file) {
+                filePreview.innerHTML = `
+                    <div class="alert alert-info d-flex align-items-center">
+                        <i class="fas fa-file me-2"></i>
+                        <div>
+                            <strong>Selected file:</strong> ${file.name}<br>
+                            <small>Size: ${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                        </div>
+                    </div>
+                `;
+            } else {
+                filePreview.innerHTML = '';
+            }
+        });
+
+        // Form validation
+        document.getElementById('claimForm').addEventListener('submit', function(e) {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (file) {
+                const maxSize = 5 * 1024 * 1024; // 5MB
+                if (file.size > maxSize) {
+                    e.preventDefault();
+                    alert('File size must be less than 5MB');
+                    return false;
+                }
+
+                const allowedExtensions = ['.pdf', '.docx', '.xlsx'];
+                const fileExtension = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+                if (!allowedExtensions.includes(fileExtension)) {
+                    e.preventDefault();
+                    alert('Only PDF, DOCX, and XLSX files are allowed');
+                    return false;
+                }
+            }
+        });
+    </script>
+}
